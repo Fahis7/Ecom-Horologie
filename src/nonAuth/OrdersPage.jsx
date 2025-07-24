@@ -102,83 +102,85 @@ const OrdersPage = () => {
           </div>
         ) : (
           <div className="space-y-8">
-            {orders.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white p-8 rounded-lg shadow-lg flex flex-col lg:flex-row items-center transition-all duration-300 hover:shadow-xl"
-              >
-                {/* Watch Image */}
-                <div className="w-full lg:w-1/3 h-64 flex items-center justify-center bg-gray-50 rounded overflow-hidden mb-6 lg:mb-0 lg:mr-8 flex-shrink-0">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="h-full w-full object-contain transition-transform duration-500 hover:scale-110"
-                  />
-                </div>
+            {orders.map((order) =>
+              order.items.map((item, index) => (
+                <div
+                  key={`${order.id}-${index}`}
+                  className="bg-white p-8 rounded-lg shadow-lg flex flex-col lg:flex-row items-center transition-all duration-300 hover:shadow-xl"
+                >
+                  {/* Watch Image */}
+                  <div className="w-full lg:w-1/3 h-64 flex items-center justify-center bg-gray-50 rounded overflow-hidden mb-6 lg:mb-0 lg:mr-8 flex-shrink-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-full w-full object-contain transition-transform duration-500 hover:scale-110"
+                    />
+                  </div>
 
-                {/* Watch Details */}
-                <div className="w-full lg:w-2/3 flex flex-col">
-                  <div className="flex flex-col md:flex-row md:justify-between md:items-start">
-                    <div className="mb-6 md:mb-0">
-                      <h3 className="text-2xl font-light text-gray-900 mb-2 leading-tight">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 uppercase tracking-wider">
-                        Reference: <span className="font-semibold">{item.id.slice(0, 10).toUpperCase()}</span>
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-sm">
-                      <div>
-                        <p className="text-gray-500 mb-1">Date</p>
-                        <p className="text-gray-900 font-medium">{formatDate(item.date || new Date())}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500 mb-1">Qty</p>
-                        <p className="text-gray-900 font-medium">{item.quantity}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500 mb-1">Price</p>
-                        <p className="text-gray-800 font-medium">${item.price.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500 mb-1">Total</p>
-                        <p className="text-gray-800 text-lg font-semibold">
-                          ${(item.price * item.quantity).toLocaleString()}
+                  {/* Watch Details */}
+                  <div className="w-full lg:w-2/3 flex flex-col">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+                      <div className="mb-6 md:mb-0">
+                        <h3 className="text-2xl font-light text-gray-900 mb-2 leading-tight">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 uppercase tracking-wider">
+                          Reference: <span className="font-semibold">{item.id.slice(0, 10).toUpperCase()}</span>
                         </p>
                       </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-sm">
+                        <div>
+                          <p className="text-gray-500 mb-1">Date</p>
+                          <p className="text-gray-900 font-medium">{formatDate(order.date || new Date())}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Qty</p>
+                          <p className="text-gray-900 font-medium">{item.quantity}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Price</p>
+                          <p className="text-gray-800 font-medium">${item.price.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Total</p>
+                          <p className="text-gray-800 text-lg font-semibold">
+                            ${(item.price * item.quantity).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Certificate Link */}
+                    <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center">
+                      <span className="text-xs text-gray-400">
+                        Order ID: <span className="font-mono">{String(order.id).slice(0, 8).toUpperCase()}</span>
+                      </span>
+                      <button
+                        onClick={() => navigate("/certificate", { state: { item } })}
+                        className="text-xs text-gray-900 hover:text-gray-600 uppercase tracking-widest flex items-center group transition-colors duration-300"
+                      >
+                        View Certificate
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3 ml-1 transform group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
                     </div>
                   </div>
-
-                  {/* Certificate Link */}
-                  <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center">
-                    <span className="text-xs text-gray-400">
-                      Order ID: <span className="font-mono">{item.id.slice(0, 8).toUpperCase()}</span>
-                    </span>
-                    <button
-                      onClick={() => navigate("/certificate", { state: { item } })}
-                      className="text-xs text-gray-900 hover:text-gray-600 uppercase tracking-widest flex items-center group transition-colors duration-300"
-                    >
-                      View Certificate
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3 ml-1 transform group-hover:translate-x-1 transition-transform duration-300"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </div>

@@ -105,7 +105,7 @@ const CertificatePage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Registered Owner</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Beloved Owner</p>
                     <p className="font-serif text-gray-900">{user.name}</p>
                     <p className="text-xs text-gray-500 mt-1">Certificate ID: CW{item.id.slice(0, 6).toUpperCase()}</p>
                   </div>

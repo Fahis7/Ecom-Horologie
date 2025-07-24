@@ -14,6 +14,11 @@ import ErrorResponse from "./nonAuth/ErrorResponse";
 import Confirmation from "./nonAuth/Confirmation";
 import OrdersPage from "./nonAuth/ordersPage";
 import CertificatePage from "./nonAuth/CertificatePage";
+import AdminRoute from "./admin/AdminRoute";
+import Dashboard from "./admin/Dashboard";
+import ManageOrders from "./admin/ManageOrders";
+import ManageUsers from "./admin/ManageUsers";
+import ManageProducts from "./admin/ManageProducts";
 
 function App() {
   return (
@@ -26,6 +31,18 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/confirmation" element={<Confirmation />} />
+
+
+        {/* admin routes*/}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<Dashboard />} />
+          <Route path="/manageorders" element={<ManageOrders />} />
+          <Route path="/manageusers" element={<ManageUsers />} />
+          <Route path="/manageproducts" element={<ManageProducts />} />
+          
+        </Route>
+
+
 
 
         {/* Routes with Navbar/Footer wrapped in MainLayout */}

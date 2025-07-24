@@ -64,34 +64,57 @@ const PaymentPage = () => {
   };
 
   const addToOrders = async () => {
-  try {
-    // Fetch latest user data to get cart and existing orders
-    const { data: userData } = await axios.get(
-      `http://localhost:5000/users/${user.id}`
-    );
+    try {
+      // Fetch latest user data to get existing orders
+      const { data: userData } = await axios.get(
+        `http://localhost:5000/users/${user.id}`
+      );
 
-    const serverCart = userData.cart || [];       // ✅ latest cart
-    const existingOrders = userData.orders || [];
+      const existingOrders = userData.orders || [];
 
-    if (serverCart.length === 0) {
-      console.warn("Cart is empty, nothing to add to orders.");
-      return;
+      // Create new order object according to template
+      const newOrder = {
+        id: Date.now(),
+        status: "Processing",
+        items: cartItems,
+        subtotal: totalAmount,
+        total: totalAmount,
+        shippingInfo: {
+          name: user.name, // Assuming user object has name
+          email: user.email,
+          address: address.street,
+          city: address.city,
+          state: address.state,
+          zip: address.zip,
+          country: address.country
+        },
+        paymentInfo: {
+          method: paymentMethod,
+          cardLast4: cardDetails.number.slice(-4),
+          cardName: cardDetails.name
+        },
+        date: new Date().toISOString(),
+      };
+
+      // Add new order to existing orders
+      const updatedOrders = [...existingOrders, newOrder];
+
+      // Update user's orders in the server
+      await axios.patch(`http://localhost:5000/users/${user.id}`, {
+        orders: updatedOrders,
+      });
+
+      // Clear the cart after successful order placement
+      await axios.patch(`http://localhost:5000/users/${user.id}`, {
+        cart: [],
+      });
+
+      console.log("Orders updated successfully");
+    } catch (err) {
+      console.error("Failed to update orders:", err);
+      throw err; // Re-throw to handle in the calling function
     }
-
-    // Add current cart items from server to orders
-    const updatedOrders = [...existingOrders, ...serverCart];
-
-    // Update user's orders in the server
-    await axios.patch(`http://localhost:5000/users/${user.id}`, {
-      orders: updatedOrders,
-    });
-
-    console.log("Orders updated successfully");
-  } catch (err) {
-    console.error("Failed to update orders:", err);
-  }
-};
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,10 +130,8 @@ const PaymentPage = () => {
       setIsSubmitting(true);
 
       try {
-         await addToOrders();
+        await addToOrders();
         
-       
-
         navigate("/confirmation", {
           state: {
             totalAmount,

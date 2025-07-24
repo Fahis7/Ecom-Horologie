@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
 import Navbar from "../../layout/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
+    if (user&&user.role == "admin") {
+      navigate("/admin");
+    }
     window.scrollTo(0, 0);
   }, []);
   return (
