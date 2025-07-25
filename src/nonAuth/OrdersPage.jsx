@@ -38,6 +38,11 @@ const OrdersPage = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  const formatStatus = (status) => {
+    if (!status) return 'Pending';
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
       {/* Hero Section / Header */}
@@ -151,11 +156,16 @@ const OrdersPage = () => {
                       </div>
                     </div>
 
-                    {/* Certificate Link */}
+                    {/* Certificate Link and Status */}
                     <div className="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center">
-                      <span className="text-xs text-gray-400">
-                        Order ID: <span className="font-mono">{String(order.id).slice(0, 8).toUpperCase()}</span>
-                      </span>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-xs text-gray-400">
+                          Order ID: <span className="font-mono">{String(order.id).slice(0, 8).toUpperCase()}</span>
+                        </span>
+                        <span className="text-xs opacity-60 text-black">
+                          Status: {formatStatus(order.status)}
+                        </span>
+                      </div>
                       <button
                         onClick={() => navigate("/certificate", { state: { item } })}
                         className="text-xs text-gray-900 hover:text-gray-600 uppercase tracking-widest flex items-center group transition-colors duration-300"

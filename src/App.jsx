@@ -19,12 +19,15 @@ import Dashboard from "./admin/Dashboard";
 import ManageOrders from "./admin/ManageOrders";
 import ManageUsers from "./admin/ManageUsers";
 import ManageProducts from "./admin/ManageProducts";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <>
       {/* Toast Notifications */}
       <Toaster position="top-center" reverseOrder={false} />
+      <ToastContainer position="top-center" autoClose={1000} />
 
       <Routes>
         {/* Routes without Navbar/Footer */}
@@ -32,18 +35,13 @@ function App() {
         <Route path="/signup" element={<Register />} />
         <Route path="/confirmation" element={<Confirmation />} />
 
-
         {/* admin routes*/}
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<Dashboard />} />
           <Route path="/manageorders" element={<ManageOrders />} />
           <Route path="/manageusers" element={<ManageUsers />} />
           <Route path="/manageproducts" element={<ManageProducts />} />
-          
         </Route>
-
-
-
 
         {/* Routes with Navbar/Footer wrapped in MainLayout */}
         <Route element={<MainLayout />}>

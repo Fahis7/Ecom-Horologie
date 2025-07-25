@@ -5,7 +5,7 @@
       "name": "Admin",
       "email": "admin@gmail.com",
       "password": "Admin@123",
-      "role": "User",
+      "role": "admin",
       "isBlock": false
     },
     {
@@ -250,7 +250,7 @@
       "email": "abdulazeez@gmail.com",
       "password": "@Abdulazeez1",
       "role": "User",
-      "isBlock": false,
+      "isBlock": true,
       "cart": [],
       "orders": [
         {
@@ -419,7 +419,7 @@
       "email": "amjid@gmail.com",
       "password": "Amjid@123",
       "role": "User",
-      "isBlock": false,
+      "isBlock": true,
       "cart": [],
       "orders": [],
       "wishlist": [
@@ -579,7 +579,7 @@
         },
         {
           "id": 1753334543384,
-          "status": "Shipped",
+          "status": "Delivered",
           "items": [
             {
               "id": "ra3",
@@ -1034,12 +1034,11 @@
       "water_resistance": "30m"
     },
     {
-      "id": "p8",
       "name": " Aquanaut",
-      "description": "Patek Philippe Aquanaut blends sporty elegance with modern sophistication. Its rounded octagonal case, tropical composite strap, and embossed dial create a distinct, youthful aesthetic. Powered by a self-winding mechanical movement, it offers luxury with contemporary flair.",
-      "price": 32000,
       "brand": "Patek Philippe",
       "image": "https://patek-res.cloudinary.com/dfsmedia/0906caea301d42b3b8bd23bd656d1711/202477-51891",
+      "price": 32000,
+      "description": "Patek Philippe Aquanaut blends sporty elegance with modern sophistication. Its rounded octagonal case, tropical composite strap, and embossed dial create a distinct, youthful aesthetic. Powered by a self-winding mechanical movement, it offers luxury with contemporary flair.",
       "in_stock": true,
       "movement": "Caliber 30-255 PS",
       "color": "silver",
@@ -1048,7 +1047,8 @@
         "https://patek-res.cloudinary.com/dfsmedia/0906caea301d42b3b8bd23bd656d1711/203649-51883"
       ],
       "video": "https://patek-res.cloudinary.com/video/upload/f_auto:video/dfsmedia/0906caea301d42b3b8bd23bd656d1711/164444-source/pp-5164g-001-screen-16-9-product-film.mp4",
-      "water_resistance": "30m"
+      "water_resistance": "30m",
+      "id": "p8"
     }
   ]
 }

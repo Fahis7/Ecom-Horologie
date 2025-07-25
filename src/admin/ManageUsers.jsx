@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 const ManageUsers = () => {
@@ -13,15 +13,13 @@ const ManageUsers = () => {
     admins: 0,
     blocked: 0,
   });
-  const [toast, setToast] = useState(null);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await axios.get("http://localhost:5000/users");
       setUsers(res.data);
-      setFiltered(res.data);
-
+      
       // Calculate statistics
       const totalUsers = res.data.length;
       const admins = res.data.filter(u => u.role === "Admin").length;
@@ -34,11 +32,10 @@ const ManageUsers = () => {
       });
     } catch (err) {
       console.error("Fetch failed", err);
-      toastError("Failed to fetch users");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -48,18 +45,21 @@ const ManageUsers = () => {
     
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchUsers]);
 
   const toggleBlock = async (user) => {
     try {
       await axios.patch(`http://localhost:5000/users/${user.id}`, {
         isBlock: !user.isBlock,
       });
-      fetchUsers();
-      toastSuccess(`User ${!user.isBlock ? "blocked" : "unblocked"} successfully`);
+      // Optimistically update the UI
+      setUsers(prevUsers => 
+        prevUsers.map(u => 
+          u.id === user.id ? {...u, isBlock: !u.isBlock} : u
+        )
+      );
     } catch (err) {
       console.error("Toggle failed", err);
-      toastError("Failed to update user status");
     }
   };
 
@@ -68,11 +68,14 @@ const ManageUsers = () => {
       await axios.patch(`http://localhost:5000/users/${user.id}`, {
         role: newRole,
       });
-      fetchUsers();
-      toastSuccess(`Role updated to ${newRole}`);
+      // Optimistically update the UI
+      setUsers(prevUsers => 
+        prevUsers.map(u => 
+          u.id === user.id ? {...u, role: newRole} : u
+        )
+      );
     } catch (err) {
       console.error("Role change failed", err);
-      toastError("Failed to update user role");
     }
   };
 
@@ -97,56 +100,6 @@ const ManageUsers = () => {
     setFiltered(temp);
   }, [searchTerm, roleFilter, blockFilter, users]);
 
-  // Toast notification component
-  const Toast = ({ message, type }) => (
-    <div
-      className={`fixed top-5 right-5 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center ${
-        type === "success" ? "bg-emerald-600" : "bg-rose-600"
-      } text-white animate-slide-in`}
-    >
-      {type === "success" ? (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      )}
-      {message}
-    </div>
-  );
-
-  const toastSuccess = (message) => {
-    setToast({ message, type: "success" });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const toastError = (message) => {
-    setToast({ message, type: "error" });
-    setTimeout(() => setToast(null), 3000);
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
@@ -160,8 +113,6 @@ const ManageUsers = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 text-gray-100">
-      {toast && <Toast message={toast.message} type={toast.type} />}
-
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -266,8 +217,8 @@ const ManageUsers = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 rounded-xl shadow-sm p-6 mb-8 border border-gray-700/50 backdrop-blur-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 rounded-xl shadow-sm p-6  mb-8 border border-gray-700/50 backdrop-blur-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

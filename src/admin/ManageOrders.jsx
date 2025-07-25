@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 const ManageOrders = () => {
@@ -16,7 +16,7 @@ const ManageOrders = () => {
     avgOrderValue: 0,
   });
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await axios.get("http://localhost:5000/users");
@@ -45,11 +45,11 @@ const ManageOrders = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleUpdateStatus = async () => {
     try {
@@ -71,15 +71,11 @@ const ManageOrders = () => {
         updatedUser
       );
 
+      setUsers(updatedUsers);
       setSelectedOrder(null);
       setSelectedUserId(null);
-      fetchUsers();
-
-      // Success notification
-      toast.success("Order status updated successfully!");
     } catch (error) {
       console.error("Error updating order status:", error);
-      toast.error("Failed to update order status");
     }
   };
 
@@ -151,58 +147,6 @@ const ManageOrders = () => {
       return acc;
     }, {});
 
-  // Toast notification component
-  const Toast = ({ message, type }) => (
-    <div
-      className={`fixed top-5 right-5 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center ${
-        type === "success" ? "bg-emerald-600" : "bg-rose-600"
-      } text-white animate-slide-in`}
-    >
-      {type === "success" ? (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      )}
-      {message}
-    </div>
-  );
-
-  const [toast, setToast] = useState(null);
-
-  const toastSuccess = (message) => {
-    setToast({ message, type: "success" });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const toastError = (message) => {
-    setToast({ message, type: "error" });
-    setTimeout(() => setToast(null), 3000);
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 to-gray-800">
@@ -216,14 +160,12 @@ const ManageOrders = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 text-gray-100">
-      {toast && <Toast message={toast.message} type={toast.type} />}
-
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <h1 className="text-4xl font-bold text-white ">
+              <h1 className="text-4xl font-bold text-white">
                 Order Management
               </h1>
               <p className="text-gray-400 mt-2">
@@ -231,32 +173,55 @@ const ManageOrders = () => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              <div className="flex gap-3">
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="border border-gray-700 px-4 py-2.5 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 appearance-none text-gray-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_0.75rem] bg-[length:1.5rem] backdrop-blur-sm"
-                >
-                  <option value="All">All Statuses</option>
-                  {Object.entries(statusCounts).map(([status, count]) => (
-                    <option key={status} value={status}>
-                      {status} ({count})
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value)}
-                  className="border border-gray-700 px-4 py-2.5 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 appearance-none text-gray-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_0.75rem] bg-[length:1.5rem] backdrop-blur-sm"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="totalHigh">Total (High to Low)</option>
-                  <option value="totalLow">Total (Low to High)</option>
-                </select>
+            <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-start sm:items-center lg:items-end xl:items-center gap-4 w-full md:w-auto">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search orders..."
+                  className="pl-10 pr-4 py-2.5 w-full border border-gray-700 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 text-gray-100"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
+
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="border border-gray-700 px-4 py-2.5 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 appearance-none text-gray-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_0.75rem] bg-[length:1.5rem] backdrop-blur-sm"
+              >
+                <option value="All">All Statuses</option>
+                {Object.entries(statusCounts).map(([status, count]) => (
+                  <option key={status} value={status}>
+                    {status} ({count})
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="border border-gray-700 px-4 py-2.5 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 appearance-none text-gray-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_0.75rem] bg-[length:1.5rem] backdrop-blur-sm"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="totalHigh">Total (High to Low)</option>
+                <option value="totalLow">Total (Low to High)</option>
+              </select>
             </div>
           </div>
         </div>
@@ -353,12 +318,26 @@ const ManageOrders = () => {
 
         {/* Status Filters */}
         <div className="mb-8">
-          <div className="flex flex-wrap gap-20">
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => setFilterStatus("All")}
+              className={`flex items-center px-4 py-2 rounded-lg border transition-all duration-200 ${
+                filterStatus === "All"
+                  ? "bg-gray-700 border-gray-600 text-gray-100 shadow-lg shadow-gray-600/10"
+                  : "bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-700/50"
+              }`}
+            >
+              <div className="w-3 h-3 rounded-full mr-2 bg-gray-600"></div>
+              <span className="text-sm font-medium">
+                All: <span className="font-bold">{stats.totalOrders}</span>
+              </span>
+            </button>
+
             {Object.entries(statusCounts).map(([status, count]) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`flex items-center px-10 py-2 rounded-lg border transition-all duration-200 ${
+                className={`flex items-center px-4 py-2 rounded-lg border transition-all duration-200 ${
                   filterStatus === status
                     ? getStatusStyle(status) + " shadow-lg shadow-current/10"
                     : "bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-700/50"
@@ -374,19 +353,6 @@ const ManageOrders = () => {
                 </span>
               </button>
             ))}
-            <button
-              onClick={() => setFilterStatus("All")}
-              className={`flex items-center px-4 py-2 rounded-lg border transition-all duration-200 ${
-                filterStatus === "All"
-                  ? "bg-gray-700 border-gray-600 text-gray-100 shadow-lg shadow-gray-600/10"
-                  : "bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-700/50"
-              }`}
-            >
-              <div className="w-3 h-3 rounded-full mr-2 bg-gray-600"></div>
-              <span className="text-sm font-medium">
-                All: <span className="font-bold">{stats.totalOrders}</span>
-              </span>
-            </button>
           </div>
         </div>
 
@@ -492,7 +458,7 @@ const ManageOrders = () => {
                         .toFixed(2)}
                     </div>
                     <button
-                      className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:from-gold-300 hover:to-gold-500 transition-all duration-300 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-gold-400/30"
+                      className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:gray-600 transition-all duration-300 flex items-center gap-2 text-sm font-medium shadow-md "
                       onClick={() => {
                         setSelectedOrder(order);
                         setSelectedUserId(order.user.id);
@@ -512,7 +478,7 @@ const ManageOrders = () => {
                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                         />
                       </svg>
-                      Update Status
+                      <span>Update Status</span>
                     </button>
                   </div>
                 </div>
@@ -528,11 +494,17 @@ const ManageOrders = () => {
                         className="flex items-center gap-4 p-4 bg-gray-700/30 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors duration-200"
                       >
                         <div className="w-16 h-16 bg-gray-800 rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                          />
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                            />
+                          ) : (
+                            <span className="text-gold-400 font-medium">
+                              {item.name.charAt(0).toUpperCase()}
+                            </span>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-100 truncate">
@@ -555,8 +527,8 @@ const ManageOrders = () => {
 
       {/* Status Update Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-800/90 rounded-xl shadow-2xl p-8 w-full max-w-md border border-gray-700/50 backdrop-blur-sm animate-scale-in">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-800/90 rounded-xl shadow-2xl p-8 w-full max-w-md border border-gray-700/50 backdrop-blur-sm">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-light bg-clip-text text-transparent bg-gradient-to-r from-gold-400 to-gold-600">
                 Update Order Status
@@ -613,7 +585,7 @@ const ManageOrders = () => {
                   Update to
                 </label>
                 <select
-                  className="w-full p-3 border border-gray-700 rounded-lg bg-gray-800 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 text-gray-100 appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem] backdrop-blur-sm"
+                  className="w-full p-3 border border-gray-700 rounded-lg bg-gray-800 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 text-gray-100 appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                 >
@@ -637,7 +609,7 @@ const ManageOrders = () => {
                 Cancel
               </button>
               <button
-                className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:from-gold-300 hover:to-gold-500 transition-all duration-300 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-gold-400/30"
+                className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:from-gold-600 hover:to-gold-700 transition-all duration-300 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-gold-400/30"
                 onClick={handleUpdateStatus}
               >
                 <svg

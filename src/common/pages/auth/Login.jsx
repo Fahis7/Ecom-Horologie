@@ -7,9 +7,10 @@ import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/Authprovider";
+import { toast } from "react-toastify";
 
-function Login() { 
-    const { login, user } = useContext(AuthContext);
+function Login() {
+  const { login, user } = useContext(AuthContext);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,7 +30,6 @@ function Login() {
     email: Yup.string().email("Invalid email").required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
-
   const onSubmit = async (values, { setSubmitting }) => {
     try {
       const res = await axios.get(
@@ -37,16 +37,29 @@ function Login() {
       );
       const user = res.data[0];
 
-      if (!user || user.password !== values.password) {
-        alert("Invalid email or password");
+      if (!user) {
+        toast.error("Invalid email or password");
         return;
       }
+
+      // Check if user is blocked (make sure this matches your DB field exactly)
+      if (user.isBlock || user.isblock) {
+        // Try both common variations
+        toast.error("Your account has been blocked. Please contact support.");
+        return;
+      }
+
+      if (user.password !== values.password) {
+        toast.error("Invalid email or password");
+        return;
+      }
+
       login({ id: user.id, name: user.name, role: user.role });
-      alert("Login successful!");
+      toast.success("Login successful!");
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Something went wrong!");
+      toast.error("Something went wrong!");
     } finally {
       setSubmitting(false);
     }
