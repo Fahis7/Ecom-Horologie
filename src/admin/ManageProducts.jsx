@@ -24,7 +24,11 @@ const ManageProducts = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [filterBrand, setFilterBrand] = useState("all");
-  const [sortOption, setSortOption] = useState("name-asc");
+  const [sortOption, setSortOption] = useState("price-asc");
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchProducts = async () => {
     try {
@@ -76,7 +80,16 @@ const ManageProducts = () => {
     });
     
     setFiltered(temp);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, products, filterBrand, sortOption]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const openModal = (product = null) => {
     setEditingProduct(product);
@@ -247,14 +260,41 @@ const ManageProducts = () => {
             >
               <option value="price-asc">Price (Low to High)</option>
               <option value="price-desc">Price (High to Low)</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="brand-asc">Brand (A-Z)</option>
+              <option value="brand-desc">Brand (Z-A)</option>
             </select>
             
             <button
               onClick={() => openModal()}
-              className="px-4 py-2.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-600"
+              className="px-4 py-2.5 bg-gold-500 text-gray-900 font-medium rounded-lg hover:bg-gold-400 transition-colors duration-200"
             >
               + Add Product
             </button>
+          </div>
+        </div>
+        
+        {/* Items per page selector */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-400">Items per page:</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-gray-700 px-3 py-1 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 text-gray-100 text-sm"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <div className="text-sm text-gray-400">
+            Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filtered.length)} of {filtered.length} products
           </div>
         </div>
         
@@ -282,12 +322,12 @@ const ManageProducts = () => {
                 </tr>
               </thead>
               <tbody className="bg-gray-800/30 divide-y divide-gray-700/50">
-                {filtered.length > 0 ? (
-                  filtered.map((product) => (
+                {currentItems.length > 0 ? (
+                  currentItems.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-700/20 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-13 w-13  flex items-center justify-center">
+                          <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-md overflow-hidden bg-gray-700">
                             {product.image ? (
                               <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                             ) : (
@@ -364,6 +404,88 @@ const ManageProducts = () => {
             </table>
           </div>
         </div>
+        
+        {/* Pagination */}
+        {filtered.length > 0 && (
+          <div className="flex justify-between items-center mt-6">
+            <div className="text-sm text-gray-400">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-lg ${currentPage === 1 ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'}`}
+              >
+                Previous
+              </button>
+              
+              {/* Always show first page */}
+              {currentPage > 3 && totalPages > 5 && (
+                <button
+                  onClick={() => paginate(1)}
+                  className={`px-3 py-1 rounded-lg ${currentPage === 1 ? 'bg-gold-400/20 text-gold-400 font-medium' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'}`}
+                >
+                  1
+                </button>
+              )}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage > 4 && totalPages > 6 && (
+                <span className="px-3 py-1 text-gray-400">...</span>
+              )}
+              
+              {/* Show pages around current page */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                if (pageNum < 1 || pageNum > totalPages) return null;
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => paginate(pageNum)}
+                    className={`px-3 py-1 rounded-lg ${currentPage === pageNum ? 'bg-gold-400/20 text-gold-400 font-medium' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              {/* Show ellipsis if needed */}
+              {currentPage < totalPages - 3 && totalPages > 6 && (
+                <span className="px-3 py-1 text-gray-400">...</span>
+              )}
+              
+              {/* Always show last page */}
+              {currentPage < totalPages - 2 && totalPages > 5 && (
+                <button
+                  onClick={() => paginate(totalPages)}
+                  className={`px-3 py-1 rounded-lg ${currentPage === totalPages ? 'bg-gold-400/20 text-gold-400 font-medium' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'}`}
+                >
+                  {totalPages}
+                </button>
+              )}
+              
+              <button
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-lg ${currentPage === totalPages ? 'bg-gray-800/30 text-gray-500 cursor-not-allowed' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'}`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Product Modal */}
         {modalOpen && (
@@ -556,7 +678,7 @@ const ManageProducts = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-600"
+                    className="px-4 py-2 bg-gold-500 text-gray-900 font-medium rounded-lg hover:bg-gold-400 transition-colors duration-200"
                   >
                     {editingProduct ? 'Update Product' : 'Add Product'}
                   </button>

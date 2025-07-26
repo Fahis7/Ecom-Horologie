@@ -75,9 +75,21 @@ const slideInFromRight = {
   }
 };
 
-const hoverEffect = {
+const cardHover = {
   scale: 1.03,
-  transition: { duration: 0.3, ease: "easeOut" }
+  y: -10,
+  transition: { 
+    duration: 0.4,
+    ease: "easeOut"
+  }
+};
+
+const imageHover = {
+  scale: 1.1,
+  transition: {
+    duration: 0.6,
+    ease: [0.6, -0.05, 0.01, 0.99]
+  }
 };
 
 const tapEffect = {
@@ -275,25 +287,48 @@ function Home() {
                   key={index} 
                   className="group relative overflow-hidden"
                   variants={scaleIn}
-                  whileHover="hover"
+                  whileHover={cardHover}
+                  whileTap={tapEffect}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  transition={{ 
+                    duration: 0.6,
+                    delay: index * 0.1
+                  }}
                 >
                   <motion.div 
-                    className="overflow-hidden"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.5 }}
+                    className="overflow-hidden h-96"
+                    whileHover={imageHover}
                   >
-                    <img
+                    <motion.img
                       src={watch.image}
                       alt={watch.name}
-                      className="w-full h-96 object-cover"
+                      className="w-full h-full object-cover"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ 
+                        opacity: 1, 
+                        scale: 1,
+                        transition: { 
+                          delay: 0.2 + index * 0.1,
+                          duration: 0.8 
+                        }
+                      }}
+                      viewport={{ once: true }}
                     />
                   </motion.div>
                   <motion.div 
                     className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6"
                     initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    whileInView={{ 
+                      opacity: 1, 
+                      y: 0,
+                      transition: { 
+                        delay: 0.4 + index * 0.1,
+                        duration: 0.6 
+                      }
+                    }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
                   >
                     <h3 className="text-xl text-white font-light mb-1">
                       {watch.name}
