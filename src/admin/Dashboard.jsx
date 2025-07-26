@@ -112,7 +112,9 @@ const Dashboard = () => {
         {/* Header with Logout */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gold-400">Horologie Admin</h1>
+            <h1 className="text-3xl font-bold text-gold-400">
+              Horologie Admin
+            </h1>
             <p className="text-gray-400 mt-1">Luxury Timepiece Analytics</p>
           </div>
           <button
@@ -328,6 +330,12 @@ const Dashboard = () => {
                     backgroundColor: "#1F2937",
                     borderColor: "#374151",
                     borderRadius: "0.5rem",
+                  }}
+                  itemStyle={{
+                    color: "#F9FAFB", 
+                  }}
+                  labelStyle={{
+                    color: "#FACC15", 
                   }}
                 />
               </PieChart>
