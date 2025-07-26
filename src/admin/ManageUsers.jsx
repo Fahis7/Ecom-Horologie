@@ -326,8 +326,8 @@ const ManageUsers = () => {
                         onClick={() => toggleBlock(user)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                           user.isBlock
-                            ? 'bg-black text-white hover:bg-gray-800'
-                            : 'bg-black text-white hover:bg-gray-800'
+                            ? 'bg-gray-800 text-white hover:bg-gray-900'
+                            : 'bg-gray-800 text-white hover:bg-gray-900'
                         }`}
                       >
                         {user.isBlock ? 'Unblock' : 'Block'}

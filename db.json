@@ -249,7 +249,7 @@
       "name": "Abdul Azeez",
       "email": "abdulazeez@gmail.com",
       "password": "@Abdulazeez1",
-      "role": "User",
+      "role": "Admin",
       "isBlock": true,
       "cart": [],
       "orders": [

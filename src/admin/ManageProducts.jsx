@@ -245,12 +245,8 @@ const ManageProducts = () => {
               onChange={(e) => setSortOption(e.target.value)}
               className="border border-gray-700 px-4 py-2.5 rounded-lg bg-gray-800/50 focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all duration-200 appearance-none text-gray-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiZxdW90O2N1cnJlbnRDb2xvciZxdW90OyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_0.75rem] bg-[length:1.5rem] backdrop-blur-sm"
             >
-              <option value="name-asc">Name (A-Z)</option>
-              <option value="name-desc">Name (Z-A)</option>
               <option value="price-asc">Price (Low to High)</option>
               <option value="price-desc">Price (High to Low)</option>
-              <option value="brand-asc">Brand (A-Z)</option>
-              <option value="brand-desc">Brand (Z-A)</option>
             </select>
             
             <button
@@ -291,7 +287,7 @@ const ManageProducts = () => {
                     <tr key={product.id} className="hover:bg-gray-700/20 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-700/50 flex items-center justify-center overflow-hidden border border-gray-600">
+                          <div className="flex-shrink-0 h-13 w-13  flex items-center justify-center">
                             {product.image ? (
                               <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                             ) : (

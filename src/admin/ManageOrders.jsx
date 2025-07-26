@@ -227,7 +227,7 @@ const ManageOrders = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:shadow-lg hover:shadow-gold-400/10 transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
@@ -283,35 +283,6 @@ const ManageOrders = () => {
             </div>
             <div className="mt-4 pt-4 border-t border-gray-700/50">
               <p className="text-xs text-gray-400">From all orders</p>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-800/30 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm hover:shadow-lg hover:shadow-gold-400/10 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Avg. Order Value</p>
-                <p className="text-3xl font-light text-gold-400 mt-1">
-                  ₹{stats.avgOrderValue.toFixed(2)}
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-gray-700/50">
-                <svg
-                  className="w-6 h-6 text-gold-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4 pt-4 border-t border-gray-700/50">
-              <p className="text-xs text-gray-400">Per order</p>
             </div>
           </div>
         </div>
@@ -493,7 +464,7 @@ const ManageOrders = () => {
                         key={item.id}
                         className="flex items-center gap-4 p-4 bg-gray-700/30 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors duration-200"
                       >
-                        <div className="w-16 h-16 bg-gray-800 rounded-lg border border-gray-700 overflow-hidden flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-lg   flex items-center justify-center">
                           {item.image ? (
                             <img
                               src={item.image}
